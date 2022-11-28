@@ -50,17 +50,16 @@ class Router(meterRegistry: MeterRegistry) : RouteBuilder() {
         from(DIRECT_ROUTE)
             .process { exchange ->
                 val keyword: String = exchange.getIn()
-                .getHeader("keywords") as? String?: ""
-                val (max, remain) = keyword.split(" ").partition{it.startsWith("max:")}
-                exchange.getIn().setHeader("keywords",remain.joinToString(" "))
-                exchange.getIn().setHeader("count",value)
+                    .getHeader("keywords") as? String ?: ""
+                val (max, remain) = keyword.split(" ").partition { it.startsWith("max:") }
+                exchange.getIn().setHeader("keywords", remain.joinToString(" "))
+                exchange.getIn().setHeader("count", value)
                 max.firstOrNull()
                     ?.drop(stringLength)
                     ?.toIntOrNull()
-                    ?.let{ count ->
-                        exchange.getIn().setHeader("count",count)
+                    ?.let { count ->
+                        exchange.getIn().setHeader("count", count)
                     }
-                
             }
             .toD("twitter-search:\${header.keywords}")
             .wireTap(LOG_ROUTE)
